@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced BMI Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f0f8ff;
+        }
+
+        .container {
+    background: rgba(255, 255, 255, 0.2); /* Translucent white */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Softer shadow for glass effect */
+    width: 350px;
+    text-align: center;
+    backdrop-filter: blur(10px); /* Blur the background behind */
+    -webkit-backdrop-filter: blur(10px); /* For Safari compatibility */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle border for definition */
+}
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .result, .chart {
+            margin-top: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Enhanced BMI Calculator</h1>
+        <input type="number" id="weight" placeholder="Weight (kg)" />
+        <input type="number" id="height" placeholder="Height (cm)" />
+        <button onclick="calculateBMI()">Calculate BMI</button>
+        <div class="result" id="result"></div>
+        <div class="chart" id="chart">
+            <h3>BMI Categories</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>BMI Range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Underweight</td><td>&lt; 18.5</td></tr>
+                    <tr><td>Normal weight</td><td>18.5 - 24.9</td></tr>
+                    <tr><td>Overweight</td><td>25 - 29.9</td></tr>
+                    <tr><td>Obese</td><td>&gt; 30</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        function calculateBMI() {
+            const weight = document.getElementById('weight').value;
+            const height = document.getElementById('height').value;
+            const result = document.getElementById('result');
+            const chart = document.getElementById('chart');
+
+            // Validate inputs
+            if (!weight || !height) {
+                result.innerText = "Please enter both weight and height.";
+                result.classList.add('visible');
+                chart.classList.remove('visible');
+                return;
+            }
+
+            const heightInMeters = height / 100;
+            const bmi = (weight / (heightInMeters ** 2)).toFixed(2);
+
+            // Determine BMI category
+            let category = '';
+            if (bmi < 18.5) {
+                category = 'Underweight';
+            } else if (bmi >= 18.5 && bmi < 24.9) {
+                category = 'Normal weight';
+            } else if (bmi >= 25 && bmi < 29.9) {
+                category = 'Overweight';
+            } else {
+                category = 'Obese';
+            }
+
+            // Display result
+            result.innerHTML = `
+                <p>Your BMI is <strong>${bmi}</strong></p>
+                <p>You are classified as: <strong>${category}</strong></p>
+            `;
+            result.classList.add('visible');
+
+            // Show BMI chart
+            chart.classList.add('visible');
+
+            // Save result to localStorage
+            saveBMIResult(weight, height, bmi, category);
+        }
+
+        function saveBMIResult(weight, height, bmi, category) {
+            const bmiRecord = {
+                weight,
+                height,
+                bmi,
+                category,
+                date: new Date().toLocaleString()
+            };
+
+            const bmiHistory = JSON.parse(localStorage.getItem('bmiHistory')) || [];
+            bmiHistory.push(bmiRecord);
+            localStorage.setItem('bmiHistory', JSON.stringify(bmiHistory));
+        }
+    </script>
+</body>
+</html>
