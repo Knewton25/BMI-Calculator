@@ -164,3 +164,11 @@
                 date: new Date().toLocaleString()
             };
 
+
+            const bmiHistory = JSON.parse(localStorage.getItem('bmiHistory')) || [];
+            bmiHistory.push(bmiRecord);
+            localStorage.setItem('bmiHistory', JSON.stringify(bmiHistory));
+        }
+    </script>
+</body>
+</html>
